@@ -1,0 +1,41 @@
+{
+  "name": "markdown-exit-s3-image",
+  "type": "module",
+  "author": "gnix_aij",
+  "version": "0.0.1",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./types": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/types.mjs"
+    },
+    "./*": "./*"
+  },
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsdown"
+  },
+  "peerDependencies": {
+    "markdown-exit": "1.0.0-beta.6"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5",
+    "thumbhash": "^0.1.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.8",
+    "@types/node": "^24.10.1",
+    "tsdown": "^0.16.6"
+  }
+}
