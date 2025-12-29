@@ -2,8 +2,12 @@
   "name": "markdown-exit-s3-image",
   "type": "module",
   "author": "gnix_aij",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Efterklang/markdown-exit-s3-image.git"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -36,6 +40,7 @@
   "devDependencies": {
     "@tsconfig/node20": "^20.1.8",
     "@types/node": "^24.10.1",
-    "tsdown": "^0.16.6"
+    "tsdown": "^0.16.6",
+    "typescript": "^5.9.3"
   }
 }
