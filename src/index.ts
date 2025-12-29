@@ -53,6 +53,14 @@ export function image(md: MarkdownExit, userOptions: Options) {
 	let cacheLoaded = false;
 	let imageCount = 0;
 
+	// Load cache once on plugin initialization
+	if (cache && !cacheLoaded) {
+		cache.load().catch((err) => {
+			console.error("[ImageCache] Failed to load cache:", err);
+		});
+		cacheLoaded = true;
+	}
+
 	// Save cache on exit
 	process.once("beforeExit", () => {
 		if (cache) {
@@ -89,11 +97,6 @@ export function image(md: MarkdownExit, userOptions: Options) {
 			return imageRule(tokens, idx, info, env, self);
 		}
 
-		if (!cacheLoaded && cache) {
-			await cache.load();
-			cacheLoaded = true;
-		}
-
 		try {
 			// --- 1. Check Cache ---
 			if (cache) {
@@ -121,20 +124,30 @@ export function image(md: MarkdownExit, userOptions: Options) {
 			const metadata = await image.metadata();
 			const { width, height } = metadata;
 
-			const { data: thumbnailBuffer, info: thumbnailInfo } = await image
-				.resize(100, 100, { fit: "inside" })
-				.ensureAlpha()
-				.raw()
-				.toBuffer({ resolveWithObject: true });
+			let placeholderUrl = "";
 
-			const placeholderUrl = rgbaToDataURL(
-				thumbnailInfo.width,
-				thumbnailInfo.height,
-				new Uint8Array(thumbnailBuffer),
-			);
+			// Try to generate placeholder, but don't fail if image is corrupted
+			try {
+				const { data: thumbnailBuffer, info: thumbnailInfo } = await image
+					.resize(100, 100, { fit: "inside" })
+					.ensureAlpha()
+					.raw()
+					.toBuffer({ resolveWithObject: true });
+
+				placeholderUrl = rgbaToDataURL(
+					thumbnailInfo.width,
+					thumbnailInfo.height,
+					new Uint8Array(thumbnailBuffer),
+				);
+			} catch (thumbErr) {
+				console.warn(
+					`[ImageCache] Failed to generate placeholder for ${src}: ${thumbErr instanceof Error ? thumbErr.message : String(thumbErr)}`,
+				);
+				// Continue without placeholder
+			}
 
 			// --- 4. Cache Result ---
-			if (cache) {
+			if (cache && placeholderUrl) {
 				cache.set(src, { width, height, placeholder: placeholderUrl });
 			}
 
@@ -221,8 +234,12 @@ function buildImageHTML(
 	 * 4. 返回包装后的 HTML
 	 * - 外层 div 控制最大宽度并占用占位空间
 	 * - aspect-ratio 确保容器高度在图片加载前就已确定
-	 * - background-image 放置低分辨率模糊预览图 (dataURL)
+	 * - background-image 放置低分辨率模糊预览图 (dataURL)，如果为空则不设置
 	 */
+	const backgroundStyle = dataURL
+		? `background-image: url('${dataURL}');`
+		: "";
+
 	return `
     <div class="img-container" style="
       position: relative;
@@ -230,7 +247,7 @@ function buildImageHTML(
       aspect-ratio: ${width} / ${height};
       max-width: ${width}px;
       width: 100%;
-      background-image: url('${dataURL}');
+      ${backgroundStyle}
       background-size: cover;
       background-repeat: no-repeat;
     ">
