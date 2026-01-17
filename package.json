@@ -1,8 +1,8 @@
 {
   "name": "markdown-exit-s3-image",
   "type": "module",
-  "author": "gnix_aij",
-  "version": "0.0.2",
+  "author": "GnixAij",
+  "version": "0.0.3",
   "license": "MIT",
   "repository": {
     "type": "git",

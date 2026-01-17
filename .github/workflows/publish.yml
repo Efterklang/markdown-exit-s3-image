@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 permissions:
   id-token: write # Required for OIDC
@@ -13,12 +14,23 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install Deps
+        run: bun install
+
+      - name: Build project
+        run: bun run build
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
-      - run: npm i
-      - run: npm run build
-      - run: npm publish
+
+      - name: Publish packages
+        run: npm publish --provenance
