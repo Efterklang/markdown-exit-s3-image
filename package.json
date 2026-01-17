@@ -28,14 +28,12 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "tsdown"
+    "build": "tsdown",
+    "test": "bun run test/index.ts",
+    "test:clean": "rm -f test/cache.json test/output.html"
   },
   "peerDependencies": {
     "markdown-exit": "1.0.0-beta.6"
-  },
-  "dependencies": {
-    "sharp": "^0.34.5",
-    "thumbhash": "^0.1.1"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.8",

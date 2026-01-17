@@ -1,13 +1,11 @@
 import { promises as fs } from "node:fs";
 
-// Define the structure for a cache entry
 export interface CacheEntry {
+	dataURL: string;
 	width: number;
 	height: number;
-	placeholder: string; // This will store the data URL
 }
 
-// Define the cache structure
 export interface CacheData {
 	[key: string]: CacheEntry;
 }
@@ -17,7 +15,6 @@ export class ImageCache {
 	private isDirty = false;
 	private cacheFilePath: string;
 
-	// Statistics
 	private stats = {
 		apiRequests: 0,
 		cacheHits: 0,
@@ -27,12 +24,11 @@ export class ImageCache {
 		this.cacheFilePath = this.cacheFile;
 	}
 
-	// Load cache from the file system
 	async load(): Promise<void> {
 		try {
 			await fs.access(this.cacheFilePath);
 			const cacheContent = await fs.readFile(this.cacheFilePath, "utf8");
-			this.cache = JSON.parse(cacheContent || "{}");
+			this.cache = JSON.parse(cacheContent || "{}") as CacheData;
 			console.log(
 				`[ImageCache] Cache loaded from ${this.cacheFilePath} with ${Object.keys(this.cache).length} items.`,
 			);
@@ -44,7 +40,6 @@ export class ImageCache {
 		}
 	}
 
-	// Save cache to the file system if it has changed
 	async save(): Promise<void> {
 		if (!this.isDirty) {
 			console.log("[ImageCache] No changes to save.");
@@ -61,25 +56,24 @@ export class ImageCache {
 		}
 	}
 
-	// Get an entry from the cache
 	get(key: string): CacheEntry | null {
-		if (this.cache[key]) {
+		const decodedKey = decodeURIComponent(key);
+		if (this.cache[decodedKey]) {
 			this.stats.cacheHits++;
-			return this.cache[key];
+			return this.cache[decodedKey];
 		}
 		this.stats.apiRequests++;
 		return null;
 	}
 
-	// Set an entry in the cache
 	set(key: string, value: CacheEntry): void {
-		if (JSON.stringify(this.cache[key]) !== JSON.stringify(value)) {
-			this.cache[key] = value;
+		const decodedKey = decodeURIComponent(key);
+		if (JSON.stringify(this.cache[decodedKey]) !== JSON.stringify(value)) {
+			this.cache[decodedKey] = value;
 			this.isDirty = true;
 		}
 	}
 
-	// Get statistics
 	getStats() {
 		const totalRequests = this.stats.apiRequests + this.stats.cacheHits;
 		return {

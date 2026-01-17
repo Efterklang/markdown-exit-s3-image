@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Image Processing - Cache Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .section {
+            margin: 40px 0;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background: #f8f9fa;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        .content {
+            padding: 20px;
+        }
+        .stats {
+            background: #f0f9ff;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid #bae6fd;
+            margin-bottom: 20px;
+        }
+        .stats h3 {
+            margin-top: 0;
+            color: #0369a1;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0f2fe;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            font-weight: 500;
+        }
+        .stat-value {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+        .success { color: #059669; }
+        .warning { color: #d97706; }
+        .info { color: #0369a1; }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .pic {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Markdown Image Processing - Cache Verification</h1>
+
+    <div class="section">
+        <div class="section-header">📊 Test Results</div>
+        <div class="content">
+            <div class="stats">
+                <h3>Performance Metrics</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Processing Duration</span>
+                    <span class="stat-value">75ms</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cache Status</span>
+                    <span class="stat-value success">1 cached images</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cache File</span>
+                    <span class="stat-value">./test/cache.json</span>
+                </div>
+            </div>
+            <p><strong>💡 Cache Testing Instructions:</strong></p>
+            <pre style="background: #f6f8fa; padding: 12px; border-radius: 6px; overflow-x: auto;">
+1. First run (creates cache):  bun run test
+2. Second run (uses cache):   bun run test
+3. Compare durations to see speedup
+            </pre>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">🎯 Processed HTML Output</div>
+        <div class="content">
+            <div class="html-content"><h1>Test Markdown with Images</h1>
+<h2>Standard Markdown Images</h2>
+<p><div class="pic" style="
+			position: relative;
+			overflow: hidden;
+			width: 100%;
+			max-width: 1200px;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAgCAYAAAD5VeO1AAAMRklEQVR4AQBdAKL/AFp0kf9Xco//VG+M/1Bsif9Oa4n/T22L/1NykP9aeZj/YoKg/2qJp/9vjqr/cI6p/22Ko/9og5n/YXqO/1tyhP9ZbXz/W215/2Fxev9qeID/dICG/32Ijf+CjJH/AF0Aov8AW3WR/1lzj/9VcIz/UW2K/09sif9Qbov/VHOQ/1t6mP9jg6D/aoqm/2+Oqf9wjqj/boqi/2iDmf9heo3/XHKD/1lte/9bbXj/YXF6/2t4f/91gYb/foiM/4OMkP8AXQCi/wBfeZP/XXeR/1lzjv9VcIv/U2+K/1NwjP9XdZH/XnyY/2WEoP9si6b/cY+p/3KPp/9vi6H/aYOY/2J7jP9cc4L/Wm56/1xtd/9jcXn/bHl+/3aChf9/iYz/hI6Q/wBdAKL/AGV+lv9ifJT/XniR/1p1jv9YdIz/WHWO/1x5kv9igJn/aYeg/2+Opv90kan/dJGn/3GNof9rhZf/ZHyL/190gf9cb3r/X293/2Vzef9ve37/eYSF/4KLjP+HkJD/AF0Aov8AbYaa/2uEmP9ngJX/Y32S/2B7kP9ge5L/Y3+V/2iFnP9vjKL/dZKo/3iVqv94laf/dZCh/2+Il/9of4v/Y3eB/2Bzev9jc3f/and6/3N/f/9+iIf/h5CN/4yUkf8AXQCi/wB5kKH/do6f/3KKm/9thpj/aoSW/2mEl/9sh5r/cY2f/3eTpf98mKr/f5us/36aqf97lKL/dIyY/26Djf9ofIL/Z3h8/2l4ef9wfHz/eoWC/4WOif+PlpD/lJqU/wBdAKL/AIWcqP+Dmab/fpWi/3mRn/92jpz/dY6c/3aRn/96laT/gJup/4Sgrf+Hoa7/hqCr/4KapP97kpr/dYmO/3CChP9ufn7/cX58/3mDf/+DjIX/jpWN/5ielP+dopj/AF0Aov8Akqev/4+krf+LoKn/hpyl/4KZov+AmKL/gZqk/4SeqP+Jo63/jaew/4+osP+Opq3/iaCl/4OYm/98j5D/d4iG/3aEgP96hX//gouC/42Uif+YnpH/oqaZ/6ernf8AXQCi/wCdsbT/mq6x/5aqrf+Qpan/jKKm/4qgpf+Koqf/jaWq/5Gprv+UrbH/lq2x/5Srrf+Qpab/iZ2b/4OUkf9/jYf/foqC/4KMgf+KkoX/lpuM/6KllP+srpz/sbOg/wBdAKL/AKW2tf+itLL/na+u/5irqv+Tp6b/kKWl/5Gmpv+Tqan/lq2t/5mvr/+asK//mK2r/5Sno/+On5n/iJeP/4SRhv+EjoH/iJCB/5GXhf+doI3/qauW/7S0nf+5uaL/AF0Aov8AqLix/6W1rv+gsar/m6ym/5aoov+TpqH/k6ai/5Wppf+YrKj/m6+q/5uvqf+arKX/laae/4+elP+Kl4r/hpGC/4ePff+MkX3/lZmC/6Kji/+urpT/ubec/7+8of8AXQCi/wCmtKj/pLGm/5+tov+ZqJ3/lKSa/5GimP+Ropn/k6Wc/5aon/+YqqH/maug/5eonP+TopX/jpuM/4mTgv+Gjnv/h413/42QeP+Xl33/o6KF/7Ctj/+7tpf/wbyc/wBdAKL/AKGsm/+eqZn/maWV/5Sgkf+PnI7/jJuM/4ybjf+OnZD/kaGT/5Sjlf+Vo5X/k6GR/4+civ+KlYH/ho54/4OJcf+FiG7/i4xv/5aUdf+inn7/sKqI/7qzkP/AuZX/AF0Aov8AmKGN/5afiv+Rm4f/jJaD/4iTgP+FkX//hZKA/4iUg/+LmIb/jpuJ/4+biP+OmYX/ipR//4aNdv+Ch27/gINn/4KCZP+Ihmb/k45s/6CZdf+tpX//uK6H/76zjP8AXQCi/wCQln3/jZR7/4mQeP+EjHT/gIly/36Hcf9/iXP/gYx2/4WPev+Ikn3/ipN9/4mSev+GjXT/gods/36BZP99fV7/f3xb/4aAXf+QiWP/nZNs/6qfdv+1qH7/u62D/wBdAKL/AIiMcP+Gim7/goZr/36DaP96gGb/eX9m/3qBaP99hWz/gYlw/4WMc/+HjnT/h4xy/4SIbP+AgmX/fXxd/3t4V/9+eFT/hHxW/4+EXP+bjmT/qJlu/7Kjdv+4qHv/AF0Aov8AhIVm/4KDZP9+gGL/enxf/3d6Xf93el7/eHxh/3yAZf+AhWr/hIlu/4eLb/+HiW3/hYVn/4GAYP99elj/fHZS/351T/+EeVH/joBW/5qKXv+nlWf/sZ5v/7ajc/8AXQCi/wCDgF//gX9e/318XP96eVn/d3dY/3d4Wf95e13/fX9i/4KEZ/+HiGv/iYps/4qJav+HhWX/hH9e/4B5Vv9+dVD/gHRM/4Z3Tf+PflL/modZ/6aRYv+wmWn/tZ5t/wBdAKL/AIR/XP+CfVv/f3tZ/3x4V/96d1b/enhY/3x7W/+Bf2H/hoVm/4uJav+Ni2z/jopq/4uGZf+IgF3/hHpV/4F1Tv+Cc0r/h3VK/5B7Tv+ahFX/pY1d/66VZP+zmWf/AF0Aov8Ahn5b/4V9Wf+Ce1f/f3hW/313Vf99eFf/gHtb/4WAYP+Khmb/j4pq/5GMbP+Si2r/j4dl/4uBXf+HelT/hHRN/4RySP+Ic0f/j3hK/5l/UP+jiFf/rI9d/7GTYf8AXQCi/wCJflr/h3xY/4R6Vv+BeFX/gHdV/4B4Vv+De1r/h4Bg/4yFZf+RiWn/lItr/5SKaf+RhmP/jH9b/4h4Uv+EcUr/hG5F/4duQ/+NckX/lnlK/5+AUP+nh1X/q4tZ/wBdAKL/AIp8V/+Ie1b/hXhU/4J2U/+AdVL/gXZU/4N5WP+HfV3/jIJi/5CGZv+TiGf/k4Zl/5CBX/+Lelf/hXJN/4FsRP+AaD7/gmc8/4hqPf+QcEH/mXdH/6B9S/+kgE7/AF0Aov8AiHhU/4Z2Uv+DdFD/gHFO/35wTv9+cE//gHNS/4R3V/+IfFz/jH9g/4+AYf+Ofl7/i3lY/4ZyT/+AakX/e2M8/3peNv97XTP/gF8z/4hlN/+Qazv/lnBA/5pzQ/8AXQCi/wCFck7/g3BN/4BtSv98a0j/emlH/3lpSP96a0v/fm5P/4JyU/+FdVf/h3ZX/4Z0Vf+Db07/fmhG/3hfPP9zWDP/cVMs/3NSKP93VCj/flgr/4ZeMP+MYzT/kGY3/wBdAKL/AIBrSP9+aUb/emZE/3ZiQf9zYD//cl9A/3NhQv92ZEX/eWdJ/3xqTP9+a03/fWhK/3pjRP91XDv/b1Qy/2tNKP9pSCL/akYe/25IHv91TSH/fVIl/4NXKf+GWiz/AF0Aov8Ae2RC/3liQP91Xj3/cFo6/21XOP9rVjf/a1c5/21ZPP9wXD//c15C/3RfQv90XT//cVg6/2xRMf9nSSj/Y0Ig/2E+Gf9jPRb/Zz8W/25DGf92SR3/fE4i/4BRJP8AXQCi/wB3Xj3/dVw7/3BYOP9rUzT/Z1Ax/2ROMP9kTjH/ZU8z/2hSNv9rVDn/bFU5/2xTN/9pTjH/ZUgq/2BBIf9dOxn/XDcU/142Ef9jORL/az4V/3JDGf95SR7/fEwg/wBdAKL/AHVaOv9yWDj/blM0/2hOMP9jSi3/YEcr/19HK/9gSC3/Ykow/2VMMv9mTTP/Zksx/2RILP9hQiX/XTwd/1s2Fv9aMxH/XTMP/2M2Ef9rPBX/c0IZ/3lHHv99SyH/AF0Aov8AdVg6/3JWN/9tUTP/Z0wu/2FHK/9eRCj/XEMo/11EKv9fRSz/YUcu/2NIL/9jRy3/YkQp/18/I/9cORz/WzUW/1szEv9fNBH/ZjgT/24+F/92RB3/fUoi/4FNJP8AXQCi/wB2WDr/c1Y4/21RM/9nSy7/YUYq/11CJ/9bQSf/W0Eo/11DKv9gRS3/YkYt/2JFLP9hQin/Xz4j/105Hf9dNhj/XjUV/2M2FP9qOxf/c0Ec/3xIIv+DTif/h1Iq/wBdAKL/AHdZO/90Vjn/blE0/2hLL/9iRir/XUIn/1tAJ/9bQCj/XUIq/2BELP9iRS3/Y0Us/2JCKf9hPyT/Xzsf/184Gv9hNxj/ZjkY/24+G/93RSH/gUwn/4hTLP+MVi//AV0Aov8AeFo8/3VXOv9vUjX/aUww/2JGK/9eQij/W0An/1tAKP9dQir/YEQs/2JFLf9jRS3/Y0Mq/2I/Jf9hOyD/YTkc/2M5Gv9pOxr/cUAe/3pII/+ETyr/i1Uv/49ZMv88js14zJ8K+AAAAABJRU5ErkJggg==');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: 1200 / 1800;
+		">
+			<img src="https://demo.bitiful.com/girl.jpeg" alt="Alt text for standard image" srcset="https://demo.bitiful.com/girl.jpeg?w=400 400w, https://demo.bitiful.com/girl.jpeg?w=600 600w, https://demo.bitiful.com/girl.jpeg?w=800 800w, https://demo.bitiful.com/girl.jpeg 1200w" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;" onload="this.style.opacity=1; this.addEventListener('transitionend', function() { this.parentElement.style.backgroundImage='none'; }, { once: true });">
+		</div></p>
+<h2>Mixed content</h2>
+<p>可以在HTML中嵌入图片，例如下面的例子：</p>
+<div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+  <div style="flex: 1;">
+<p><div class="pic" style="
+			position: relative;
+			overflow: hidden;
+			width: 100%;
+			max-width: 1200px;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAgCAYAAAD5VeO1AAAMRklEQVR4AQBdAKL/AFp0kf9Xco//VG+M/1Bsif9Oa4n/T22L/1NykP9aeZj/YoKg/2qJp/9vjqr/cI6p/22Ko/9og5n/YXqO/1tyhP9ZbXz/W215/2Fxev9qeID/dICG/32Ijf+CjJH/AF0Aov8AW3WR/1lzj/9VcIz/UW2K/09sif9Qbov/VHOQ/1t6mP9jg6D/aoqm/2+Oqf9wjqj/boqi/2iDmf9heo3/XHKD/1lte/9bbXj/YXF6/2t4f/91gYb/foiM/4OMkP8AXQCi/wBfeZP/XXeR/1lzjv9VcIv/U2+K/1NwjP9XdZH/XnyY/2WEoP9si6b/cY+p/3KPp/9vi6H/aYOY/2J7jP9cc4L/Wm56/1xtd/9jcXn/bHl+/3aChf9/iYz/hI6Q/wBdAKL/AGV+lv9ifJT/XniR/1p1jv9YdIz/WHWO/1x5kv9igJn/aYeg/2+Opv90kan/dJGn/3GNof9rhZf/ZHyL/190gf9cb3r/X293/2Vzef9ve37/eYSF/4KLjP+HkJD/AF0Aov8AbYaa/2uEmP9ngJX/Y32S/2B7kP9ge5L/Y3+V/2iFnP9vjKL/dZKo/3iVqv94laf/dZCh/2+Il/9of4v/Y3eB/2Bzev9jc3f/and6/3N/f/9+iIf/h5CN/4yUkf8AXQCi/wB5kKH/do6f/3KKm/9thpj/aoSW/2mEl/9sh5r/cY2f/3eTpf98mKr/f5us/36aqf97lKL/dIyY/26Djf9ofIL/Z3h8/2l4ef9wfHz/eoWC/4WOif+PlpD/lJqU/wBdAKL/AIWcqP+Dmab/fpWi/3mRn/92jpz/dY6c/3aRn/96laT/gJup/4Sgrf+Hoa7/hqCr/4KapP97kpr/dYmO/3CChP9ufn7/cX58/3mDf/+DjIX/jpWN/5ielP+dopj/AF0Aov8Akqev/4+krf+LoKn/hpyl/4KZov+AmKL/gZqk/4SeqP+Jo63/jaew/4+osP+Opq3/iaCl/4OYm/98j5D/d4iG/3aEgP96hX//gouC/42Uif+YnpH/oqaZ/6ernf8AXQCi/wCdsbT/mq6x/5aqrf+Qpan/jKKm/4qgpf+Koqf/jaWq/5Gprv+UrbH/lq2x/5Srrf+Qpab/iZ2b/4OUkf9/jYf/foqC/4KMgf+KkoX/lpuM/6KllP+srpz/sbOg/wBdAKL/AKW2tf+itLL/na+u/5irqv+Tp6b/kKWl/5Gmpv+Tqan/lq2t/5mvr/+asK//mK2r/5Sno/+On5n/iJeP/4SRhv+EjoH/iJCB/5GXhf+doI3/qauW/7S0nf+5uaL/AF0Aov8AqLix/6W1rv+gsar/m6ym/5aoov+TpqH/k6ai/5Wppf+YrKj/m6+q/5uvqf+arKX/laae/4+elP+Kl4r/hpGC/4ePff+MkX3/lZmC/6Kji/+urpT/ubec/7+8of8AXQCi/wCmtKj/pLGm/5+tov+ZqJ3/lKSa/5GimP+Ropn/k6Wc/5aon/+YqqH/maug/5eonP+TopX/jpuM/4mTgv+Gjnv/h413/42QeP+Xl33/o6KF/7Ctj/+7tpf/wbyc/wBdAKL/AKGsm/+eqZn/maWV/5Sgkf+PnI7/jJuM/4ybjf+OnZD/kaGT/5Sjlf+Vo5X/k6GR/4+civ+KlYH/ho54/4OJcf+FiG7/i4xv/5aUdf+inn7/sKqI/7qzkP/AuZX/AF0Aov8AmKGN/5afiv+Rm4f/jJaD/4iTgP+FkX//hZKA/4iUg/+LmIb/jpuJ/4+biP+OmYX/ipR//4aNdv+Ch27/gINn/4KCZP+Ihmb/k45s/6CZdf+tpX//uK6H/76zjP8AXQCi/wCQln3/jZR7/4mQeP+EjHT/gIly/36Hcf9/iXP/gYx2/4WPev+Ikn3/ipN9/4mSev+GjXT/gods/36BZP99fV7/f3xb/4aAXf+QiWP/nZNs/6qfdv+1qH7/u62D/wBdAKL/AIiMcP+Gim7/goZr/36DaP96gGb/eX9m/3qBaP99hWz/gYlw/4WMc/+HjnT/h4xy/4SIbP+AgmX/fXxd/3t4V/9+eFT/hHxW/4+EXP+bjmT/qJlu/7Kjdv+4qHv/AF0Aov8AhIVm/4KDZP9+gGL/enxf/3d6Xf93el7/eHxh/3yAZf+AhWr/hIlu/4eLb/+HiW3/hYVn/4GAYP99elj/fHZS/351T/+EeVH/joBW/5qKXv+nlWf/sZ5v/7ajc/8AXQCi/wCDgF//gX9e/318XP96eVn/d3dY/3d4Wf95e13/fX9i/4KEZ/+HiGv/iYps/4qJav+HhWX/hH9e/4B5Vv9+dVD/gHRM/4Z3Tf+PflL/modZ/6aRYv+wmWn/tZ5t/wBdAKL/AIR/XP+CfVv/f3tZ/3x4V/96d1b/enhY/3x7W/+Bf2H/hoVm/4uJav+Ni2z/jopq/4uGZf+IgF3/hHpV/4F1Tv+Cc0r/h3VK/5B7Tv+ahFX/pY1d/66VZP+zmWf/AF0Aov8Ahn5b/4V9Wf+Ce1f/f3hW/313Vf99eFf/gHtb/4WAYP+Khmb/j4pq/5GMbP+Si2r/j4dl/4uBXf+HelT/hHRN/4RySP+Ic0f/j3hK/5l/UP+jiFf/rI9d/7GTYf8AXQCi/wCJflr/h3xY/4R6Vv+BeFX/gHdV/4B4Vv+De1r/h4Bg/4yFZf+RiWn/lItr/5SKaf+RhmP/jH9b/4h4Uv+EcUr/hG5F/4duQ/+NckX/lnlK/5+AUP+nh1X/q4tZ/wBdAKL/AIp8V/+Ie1b/hXhU/4J2U/+AdVL/gXZU/4N5WP+HfV3/jIJi/5CGZv+TiGf/k4Zl/5CBX/+Lelf/hXJN/4FsRP+AaD7/gmc8/4hqPf+QcEH/mXdH/6B9S/+kgE7/AF0Aov8AiHhU/4Z2Uv+DdFD/gHFO/35wTv9+cE//gHNS/4R3V/+IfFz/jH9g/4+AYf+Ofl7/i3lY/4ZyT/+AakX/e2M8/3peNv97XTP/gF8z/4hlN/+Qazv/lnBA/5pzQ/8AXQCi/wCFck7/g3BN/4BtSv98a0j/emlH/3lpSP96a0v/fm5P/4JyU/+FdVf/h3ZX/4Z0Vf+Db07/fmhG/3hfPP9zWDP/cVMs/3NSKP93VCj/flgr/4ZeMP+MYzT/kGY3/wBdAKL/AIBrSP9+aUb/emZE/3ZiQf9zYD//cl9A/3NhQv92ZEX/eWdJ/3xqTP9+a03/fWhK/3pjRP91XDv/b1Qy/2tNKP9pSCL/akYe/25IHv91TSH/fVIl/4NXKf+GWiz/AF0Aov8Ae2RC/3liQP91Xj3/cFo6/21XOP9rVjf/a1c5/21ZPP9wXD//c15C/3RfQv90XT//cVg6/2xRMf9nSSj/Y0Ig/2E+Gf9jPRb/Zz8W/25DGf92SR3/fE4i/4BRJP8AXQCi/wB3Xj3/dVw7/3BYOP9rUzT/Z1Ax/2ROMP9kTjH/ZU8z/2hSNv9rVDn/bFU5/2xTN/9pTjH/ZUgq/2BBIf9dOxn/XDcU/142Ef9jORL/az4V/3JDGf95SR7/fEwg/wBdAKL/AHVaOv9yWDj/blM0/2hOMP9jSi3/YEcr/19HK/9gSC3/Ykow/2VMMv9mTTP/Zksx/2RILP9hQiX/XTwd/1s2Fv9aMxH/XTMP/2M2Ef9rPBX/c0IZ/3lHHv99SyH/AF0Aov8AdVg6/3JWN/9tUTP/Z0wu/2FHK/9eRCj/XEMo/11EKv9fRSz/YUcu/2NIL/9jRy3/YkQp/18/I/9cORz/WzUW/1szEv9fNBH/ZjgT/24+F/92RB3/fUoi/4FNJP8AXQCi/wB2WDr/c1Y4/21RM/9nSy7/YUYq/11CJ/9bQSf/W0Eo/11DKv9gRS3/YkYt/2JFLP9hQin/Xz4j/105Hf9dNhj/XjUV/2M2FP9qOxf/c0Ec/3xIIv+DTif/h1Iq/wBdAKL/AHdZO/90Vjn/blE0/2hLL/9iRir/XUIn/1tAJ/9bQCj/XUIq/2BELP9iRS3/Y0Us/2JCKf9hPyT/Xzsf/184Gv9hNxj/ZjkY/24+G/93RSH/gUwn/4hTLP+MVi//AV0Aov8AeFo8/3VXOv9vUjX/aUww/2JGK/9eQij/W0An/1tAKP9dQir/YEQs/2JFLf9jRS3/Y0Mq/2I/Jf9hOyD/YTkc/2M5Gv9pOxr/cUAe/3pII/+ETyr/i1Uv/49ZMv88js14zJ8K+AAAAABJRU5ErkJggg==');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: 1200 / 1800;
+		">
+			<img src="https://demo.bitiful.com/girl.jpeg" alt="Alt text for standard image" srcset="https://demo.bitiful.com/girl.jpeg?w=400 400w, https://demo.bitiful.com/girl.jpeg?w=600 600w, https://demo.bitiful.com/girl.jpeg?w=800 800w, https://demo.bitiful.com/girl.jpeg 1200w" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;" onload="this.style.opacity=1; this.addEventListener('transitionend', function() { this.parentElement.style.backgroundImage='none'; }, { once: true });">
+		</div></p>
+  </div>
+  <div style="flex: 1;">
+<p><div class="pic" style="
+			position: relative;
+			overflow: hidden;
+			width: 100%;
+			max-width: 1200px;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAgCAYAAAD5VeO1AAAMRklEQVR4AQBdAKL/AFp0kf9Xco//VG+M/1Bsif9Oa4n/T22L/1NykP9aeZj/YoKg/2qJp/9vjqr/cI6p/22Ko/9og5n/YXqO/1tyhP9ZbXz/W215/2Fxev9qeID/dICG/32Ijf+CjJH/AF0Aov8AW3WR/1lzj/9VcIz/UW2K/09sif9Qbov/VHOQ/1t6mP9jg6D/aoqm/2+Oqf9wjqj/boqi/2iDmf9heo3/XHKD/1lte/9bbXj/YXF6/2t4f/91gYb/foiM/4OMkP8AXQCi/wBfeZP/XXeR/1lzjv9VcIv/U2+K/1NwjP9XdZH/XnyY/2WEoP9si6b/cY+p/3KPp/9vi6H/aYOY/2J7jP9cc4L/Wm56/1xtd/9jcXn/bHl+/3aChf9/iYz/hI6Q/wBdAKL/AGV+lv9ifJT/XniR/1p1jv9YdIz/WHWO/1x5kv9igJn/aYeg/2+Opv90kan/dJGn/3GNof9rhZf/ZHyL/190gf9cb3r/X293/2Vzef9ve37/eYSF/4KLjP+HkJD/AF0Aov8AbYaa/2uEmP9ngJX/Y32S/2B7kP9ge5L/Y3+V/2iFnP9vjKL/dZKo/3iVqv94laf/dZCh/2+Il/9of4v/Y3eB/2Bzev9jc3f/and6/3N/f/9+iIf/h5CN/4yUkf8AXQCi/wB5kKH/do6f/3KKm/9thpj/aoSW/2mEl/9sh5r/cY2f/3eTpf98mKr/f5us/36aqf97lKL/dIyY/26Djf9ofIL/Z3h8/2l4ef9wfHz/eoWC/4WOif+PlpD/lJqU/wBdAKL/AIWcqP+Dmab/fpWi/3mRn/92jpz/dY6c/3aRn/96laT/gJup/4Sgrf+Hoa7/hqCr/4KapP97kpr/dYmO/3CChP9ufn7/cX58/3mDf/+DjIX/jpWN/5ielP+dopj/AF0Aov8Akqev/4+krf+LoKn/hpyl/4KZov+AmKL/gZqk/4SeqP+Jo63/jaew/4+osP+Opq3/iaCl/4OYm/98j5D/d4iG/3aEgP96hX//gouC/42Uif+YnpH/oqaZ/6ernf8AXQCi/wCdsbT/mq6x/5aqrf+Qpan/jKKm/4qgpf+Koqf/jaWq/5Gprv+UrbH/lq2x/5Srrf+Qpab/iZ2b/4OUkf9/jYf/foqC/4KMgf+KkoX/lpuM/6KllP+srpz/sbOg/wBdAKL/AKW2tf+itLL/na+u/5irqv+Tp6b/kKWl/5Gmpv+Tqan/lq2t/5mvr/+asK//mK2r/5Sno/+On5n/iJeP/4SRhv+EjoH/iJCB/5GXhf+doI3/qauW/7S0nf+5uaL/AF0Aov8AqLix/6W1rv+gsar/m6ym/5aoov+TpqH/k6ai/5Wppf+YrKj/m6+q/5uvqf+arKX/laae/4+elP+Kl4r/hpGC/4ePff+MkX3/lZmC/6Kji/+urpT/ubec/7+8of8AXQCi/wCmtKj/pLGm/5+tov+ZqJ3/lKSa/5GimP+Ropn/k6Wc/5aon/+YqqH/maug/5eonP+TopX/jpuM/4mTgv+Gjnv/h413/42QeP+Xl33/o6KF/7Ctj/+7tpf/wbyc/wBdAKL/AKGsm/+eqZn/maWV/5Sgkf+PnI7/jJuM/4ybjf+OnZD/kaGT/5Sjlf+Vo5X/k6GR/4+civ+KlYH/ho54/4OJcf+FiG7/i4xv/5aUdf+inn7/sKqI/7qzkP/AuZX/AF0Aov8AmKGN/5afiv+Rm4f/jJaD/4iTgP+FkX//hZKA/4iUg/+LmIb/jpuJ/4+biP+OmYX/ipR//4aNdv+Ch27/gINn/4KCZP+Ihmb/k45s/6CZdf+tpX//uK6H/76zjP8AXQCi/wCQln3/jZR7/4mQeP+EjHT/gIly/36Hcf9/iXP/gYx2/4WPev+Ikn3/ipN9/4mSev+GjXT/gods/36BZP99fV7/f3xb/4aAXf+QiWP/nZNs/6qfdv+1qH7/u62D/wBdAKL/AIiMcP+Gim7/goZr/36DaP96gGb/eX9m/3qBaP99hWz/gYlw/4WMc/+HjnT/h4xy/4SIbP+AgmX/fXxd/3t4V/9+eFT/hHxW/4+EXP+bjmT/qJlu/7Kjdv+4qHv/AF0Aov8AhIVm/4KDZP9+gGL/enxf/3d6Xf93el7/eHxh/3yAZf+AhWr/hIlu/4eLb/+HiW3/hYVn/4GAYP99elj/fHZS/351T/+EeVH/joBW/5qKXv+nlWf/sZ5v/7ajc/8AXQCi/wCDgF//gX9e/318XP96eVn/d3dY/3d4Wf95e13/fX9i/4KEZ/+HiGv/iYps/4qJav+HhWX/hH9e/4B5Vv9+dVD/gHRM/4Z3Tf+PflL/modZ/6aRYv+wmWn/tZ5t/wBdAKL/AIR/XP+CfVv/f3tZ/3x4V/96d1b/enhY/3x7W/+Bf2H/hoVm/4uJav+Ni2z/jopq/4uGZf+IgF3/hHpV/4F1Tv+Cc0r/h3VK/5B7Tv+ahFX/pY1d/66VZP+zmWf/AF0Aov8Ahn5b/4V9Wf+Ce1f/f3hW/313Vf99eFf/gHtb/4WAYP+Khmb/j4pq/5GMbP+Si2r/j4dl/4uBXf+HelT/hHRN/4RySP+Ic0f/j3hK/5l/UP+jiFf/rI9d/7GTYf8AXQCi/wCJflr/h3xY/4R6Vv+BeFX/gHdV/4B4Vv+De1r/h4Bg/4yFZf+RiWn/lItr/5SKaf+RhmP/jH9b/4h4Uv+EcUr/hG5F/4duQ/+NckX/lnlK/5+AUP+nh1X/q4tZ/wBdAKL/AIp8V/+Ie1b/hXhU/4J2U/+AdVL/gXZU/4N5WP+HfV3/jIJi/5CGZv+TiGf/k4Zl/5CBX/+Lelf/hXJN/4FsRP+AaD7/gmc8/4hqPf+QcEH/mXdH/6B9S/+kgE7/AF0Aov8AiHhU/4Z2Uv+DdFD/gHFO/35wTv9+cE//gHNS/4R3V/+IfFz/jH9g/4+AYf+Ofl7/i3lY/4ZyT/+AakX/e2M8/3peNv97XTP/gF8z/4hlN/+Qazv/lnBA/5pzQ/8AXQCi/wCFck7/g3BN/4BtSv98a0j/emlH/3lpSP96a0v/fm5P/4JyU/+FdVf/h3ZX/4Z0Vf+Db07/fmhG/3hfPP9zWDP/cVMs/3NSKP93VCj/flgr/4ZeMP+MYzT/kGY3/wBdAKL/AIBrSP9+aUb/emZE/3ZiQf9zYD//cl9A/3NhQv92ZEX/eWdJ/3xqTP9+a03/fWhK/3pjRP91XDv/b1Qy/2tNKP9pSCL/akYe/25IHv91TSH/fVIl/4NXKf+GWiz/AF0Aov8Ae2RC/3liQP91Xj3/cFo6/21XOP9rVjf/a1c5/21ZPP9wXD//c15C/3RfQv90XT//cVg6/2xRMf9nSSj/Y0Ig/2E+Gf9jPRb/Zz8W/25DGf92SR3/fE4i/4BRJP8AXQCi/wB3Xj3/dVw7/3BYOP9rUzT/Z1Ax/2ROMP9kTjH/ZU8z/2hSNv9rVDn/bFU5/2xTN/9pTjH/ZUgq/2BBIf9dOxn/XDcU/142Ef9jORL/az4V/3JDGf95SR7/fEwg/wBdAKL/AHVaOv9yWDj/blM0/2hOMP9jSi3/YEcr/19HK/9gSC3/Ykow/2VMMv9mTTP/Zksx/2RILP9hQiX/XTwd/1s2Fv9aMxH/XTMP/2M2Ef9rPBX/c0IZ/3lHHv99SyH/AF0Aov8AdVg6/3JWN/9tUTP/Z0wu/2FHK/9eRCj/XEMo/11EKv9fRSz/YUcu/2NIL/9jRy3/YkQp/18/I/9cORz/WzUW/1szEv9fNBH/ZjgT/24+F/92RB3/fUoi/4FNJP8AXQCi/wB2WDr/c1Y4/21RM/9nSy7/YUYq/11CJ/9bQSf/W0Eo/11DKv9gRS3/YkYt/2JFLP9hQin/Xz4j/105Hf9dNhj/XjUV/2M2FP9qOxf/c0Ec/3xIIv+DTif/h1Iq/wBdAKL/AHdZO/90Vjn/blE0/2hLL/9iRir/XUIn/1tAJ/9bQCj/XUIq/2BELP9iRS3/Y0Us/2JCKf9hPyT/Xzsf/184Gv9hNxj/ZjkY/24+G/93RSH/gUwn/4hTLP+MVi//AV0Aov8AeFo8/3VXOv9vUjX/aUww/2JGK/9eQij/W0An/1tAKP9dQir/YEQs/2JFLf9jRS3/Y0Mq/2I/Jf9hOyD/YTkc/2M5Gv9pOxr/cUAe/3pII/+ETyr/i1Uv/49ZMv88js14zJ8K+AAAAABJRU5ErkJggg==');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: 1200 / 1800;
+		">
+			<img src="https://demo.bitiful.com/girl.jpeg" alt="Alt text for standard image" srcset="https://demo.bitiful.com/girl.jpeg?w=400 400w, https://demo.bitiful.com/girl.jpeg?w=600 600w, https://demo.bitiful.com/girl.jpeg?w=800 800w, https://demo.bitiful.com/girl.jpeg 1200w" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;" onload="this.style.opacity=1; this.addEventListener('transitionend', function() { this.parentElement.style.backgroundImage='none'; }, { once: true });">
+		</div></p>
+  </div>
+</div>
+<h2>Local images (should be skipped)</h2>
+<p><img src="./test.png" alt="Local image"></p>
+<h2>Unsupported domains (if configured)</h2>
+<p><img src="https://bu.dusays.com/2025/09/17/68c9f8d54dca5.webp" alt="Unsupported domain"></p>
+<h2>Complex scenarios</h2>
+<h3>Image in list</h3>
+<ol>
+<li>First item</li>
+<li><div class="pic" style="
+			position: relative;
+			overflow: hidden;
+			width: 100%;
+			max-width: 1200px;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAgCAYAAAD5VeO1AAAMRklEQVR4AQBdAKL/AFp0kf9Xco//VG+M/1Bsif9Oa4n/T22L/1NykP9aeZj/YoKg/2qJp/9vjqr/cI6p/22Ko/9og5n/YXqO/1tyhP9ZbXz/W215/2Fxev9qeID/dICG/32Ijf+CjJH/AF0Aov8AW3WR/1lzj/9VcIz/UW2K/09sif9Qbov/VHOQ/1t6mP9jg6D/aoqm/2+Oqf9wjqj/boqi/2iDmf9heo3/XHKD/1lte/9bbXj/YXF6/2t4f/91gYb/foiM/4OMkP8AXQCi/wBfeZP/XXeR/1lzjv9VcIv/U2+K/1NwjP9XdZH/XnyY/2WEoP9si6b/cY+p/3KPp/9vi6H/aYOY/2J7jP9cc4L/Wm56/1xtd/9jcXn/bHl+/3aChf9/iYz/hI6Q/wBdAKL/AGV+lv9ifJT/XniR/1p1jv9YdIz/WHWO/1x5kv9igJn/aYeg/2+Opv90kan/dJGn/3GNof9rhZf/ZHyL/190gf9cb3r/X293/2Vzef9ve37/eYSF/4KLjP+HkJD/AF0Aov8AbYaa/2uEmP9ngJX/Y32S/2B7kP9ge5L/Y3+V/2iFnP9vjKL/dZKo/3iVqv94laf/dZCh/2+Il/9of4v/Y3eB/2Bzev9jc3f/and6/3N/f/9+iIf/h5CN/4yUkf8AXQCi/wB5kKH/do6f/3KKm/9thpj/aoSW/2mEl/9sh5r/cY2f/3eTpf98mKr/f5us/36aqf97lKL/dIyY/26Djf9ofIL/Z3h8/2l4ef9wfHz/eoWC/4WOif+PlpD/lJqU/wBdAKL/AIWcqP+Dmab/fpWi/3mRn/92jpz/dY6c/3aRn/96laT/gJup/4Sgrf+Hoa7/hqCr/4KapP97kpr/dYmO/3CChP9ufn7/cX58/3mDf/+DjIX/jpWN/5ielP+dopj/AF0Aov8Akqev/4+krf+LoKn/hpyl/4KZov+AmKL/gZqk/4SeqP+Jo63/jaew/4+osP+Opq3/iaCl/4OYm/98j5D/d4iG/3aEgP96hX//gouC/42Uif+YnpH/oqaZ/6ernf8AXQCi/wCdsbT/mq6x/5aqrf+Qpan/jKKm/4qgpf+Koqf/jaWq/5Gprv+UrbH/lq2x/5Srrf+Qpab/iZ2b/4OUkf9/jYf/foqC/4KMgf+KkoX/lpuM/6KllP+srpz/sbOg/wBdAKL/AKW2tf+itLL/na+u/5irqv+Tp6b/kKWl/5Gmpv+Tqan/lq2t/5mvr/+asK//mK2r/5Sno/+On5n/iJeP/4SRhv+EjoH/iJCB/5GXhf+doI3/qauW/7S0nf+5uaL/AF0Aov8AqLix/6W1rv+gsar/m6ym/5aoov+TpqH/k6ai/5Wppf+YrKj/m6+q/5uvqf+arKX/laae/4+elP+Kl4r/hpGC/4ePff+MkX3/lZmC/6Kji/+urpT/ubec/7+8of8AXQCi/wCmtKj/pLGm/5+tov+ZqJ3/lKSa/5GimP+Ropn/k6Wc/5aon/+YqqH/maug/5eonP+TopX/jpuM/4mTgv+Gjnv/h413/42QeP+Xl33/o6KF/7Ctj/+7tpf/wbyc/wBdAKL/AKGsm/+eqZn/maWV/5Sgkf+PnI7/jJuM/4ybjf+OnZD/kaGT/5Sjlf+Vo5X/k6GR/4+civ+KlYH/ho54/4OJcf+FiG7/i4xv/5aUdf+inn7/sKqI/7qzkP/AuZX/AF0Aov8AmKGN/5afiv+Rm4f/jJaD/4iTgP+FkX//hZKA/4iUg/+LmIb/jpuJ/4+biP+OmYX/ipR//4aNdv+Ch27/gINn/4KCZP+Ihmb/k45s/6CZdf+tpX//uK6H/76zjP8AXQCi/wCQln3/jZR7/4mQeP+EjHT/gIly/36Hcf9/iXP/gYx2/4WPev+Ikn3/ipN9/4mSev+GjXT/gods/36BZP99fV7/f3xb/4aAXf+QiWP/nZNs/6qfdv+1qH7/u62D/wBdAKL/AIiMcP+Gim7/goZr/36DaP96gGb/eX9m/3qBaP99hWz/gYlw/4WMc/+HjnT/h4xy/4SIbP+AgmX/fXxd/3t4V/9+eFT/hHxW/4+EXP+bjmT/qJlu/7Kjdv+4qHv/AF0Aov8AhIVm/4KDZP9+gGL/enxf/3d6Xf93el7/eHxh/3yAZf+AhWr/hIlu/4eLb/+HiW3/hYVn/4GAYP99elj/fHZS/351T/+EeVH/joBW/5qKXv+nlWf/sZ5v/7ajc/8AXQCi/wCDgF//gX9e/318XP96eVn/d3dY/3d4Wf95e13/fX9i/4KEZ/+HiGv/iYps/4qJav+HhWX/hH9e/4B5Vv9+dVD/gHRM/4Z3Tf+PflL/modZ/6aRYv+wmWn/tZ5t/wBdAKL/AIR/XP+CfVv/f3tZ/3x4V/96d1b/enhY/3x7W/+Bf2H/hoVm/4uJav+Ni2z/jopq/4uGZf+IgF3/hHpV/4F1Tv+Cc0r/h3VK/5B7Tv+ahFX/pY1d/66VZP+zmWf/AF0Aov8Ahn5b/4V9Wf+Ce1f/f3hW/313Vf99eFf/gHtb/4WAYP+Khmb/j4pq/5GMbP+Si2r/j4dl/4uBXf+HelT/hHRN/4RySP+Ic0f/j3hK/5l/UP+jiFf/rI9d/7GTYf8AXQCi/wCJflr/h3xY/4R6Vv+BeFX/gHdV/4B4Vv+De1r/h4Bg/4yFZf+RiWn/lItr/5SKaf+RhmP/jH9b/4h4Uv+EcUr/hG5F/4duQ/+NckX/lnlK/5+AUP+nh1X/q4tZ/wBdAKL/AIp8V/+Ie1b/hXhU/4J2U/+AdVL/gXZU/4N5WP+HfV3/jIJi/5CGZv+TiGf/k4Zl/5CBX/+Lelf/hXJN/4FsRP+AaD7/gmc8/4hqPf+QcEH/mXdH/6B9S/+kgE7/AF0Aov8AiHhU/4Z2Uv+DdFD/gHFO/35wTv9+cE//gHNS/4R3V/+IfFz/jH9g/4+AYf+Ofl7/i3lY/4ZyT/+AakX/e2M8/3peNv97XTP/gF8z/4hlN/+Qazv/lnBA/5pzQ/8AXQCi/wCFck7/g3BN/4BtSv98a0j/emlH/3lpSP96a0v/fm5P/4JyU/+FdVf/h3ZX/4Z0Vf+Db07/fmhG/3hfPP9zWDP/cVMs/3NSKP93VCj/flgr/4ZeMP+MYzT/kGY3/wBdAKL/AIBrSP9+aUb/emZE/3ZiQf9zYD//cl9A/3NhQv92ZEX/eWdJ/3xqTP9+a03/fWhK/3pjRP91XDv/b1Qy/2tNKP9pSCL/akYe/25IHv91TSH/fVIl/4NXKf+GWiz/AF0Aov8Ae2RC/3liQP91Xj3/cFo6/21XOP9rVjf/a1c5/21ZPP9wXD//c15C/3RfQv90XT//cVg6/2xRMf9nSSj/Y0Ig/2E+Gf9jPRb/Zz8W/25DGf92SR3/fE4i/4BRJP8AXQCi/wB3Xj3/dVw7/3BYOP9rUzT/Z1Ax/2ROMP9kTjH/ZU8z/2hSNv9rVDn/bFU5/2xTN/9pTjH/ZUgq/2BBIf9dOxn/XDcU/142Ef9jORL/az4V/3JDGf95SR7/fEwg/wBdAKL/AHVaOv9yWDj/blM0/2hOMP9jSi3/YEcr/19HK/9gSC3/Ykow/2VMMv9mTTP/Zksx/2RILP9hQiX/XTwd/1s2Fv9aMxH/XTMP/2M2Ef9rPBX/c0IZ/3lHHv99SyH/AF0Aov8AdVg6/3JWN/9tUTP/Z0wu/2FHK/9eRCj/XEMo/11EKv9fRSz/YUcu/2NIL/9jRy3/YkQp/18/I/9cORz/WzUW/1szEv9fNBH/ZjgT/24+F/92RB3/fUoi/4FNJP8AXQCi/wB2WDr/c1Y4/21RM/9nSy7/YUYq/11CJ/9bQSf/W0Eo/11DKv9gRS3/YkYt/2JFLP9hQin/Xz4j/105Hf9dNhj/XjUV/2M2FP9qOxf/c0Ec/3xIIv+DTif/h1Iq/wBdAKL/AHdZO/90Vjn/blE0/2hLL/9iRir/XUIn/1tAJ/9bQCj/XUIq/2BELP9iRS3/Y0Us/2JCKf9hPyT/Xzsf/184Gv9hNxj/ZjkY/24+G/93RSH/gUwn/4hTLP+MVi//AV0Aov8AeFo8/3VXOv9vUjX/aUww/2JGK/9eQij/W0An/1tAKP9dQir/YEQs/2JFLf9jRS3/Y0Mq/2I/Jf9hOyD/YTkc/2M5Gv9pOxr/cUAe/3pII/+ETyr/i1Uv/49ZMv88js14zJ8K+AAAAABJRU5ErkJggg==');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: 1200 / 1800;
+		">
+			<img src="https://demo.bitiful.com/girl.jpeg" alt="Image in list" srcset="https://demo.bitiful.com/girl.jpeg?w=400 400w, https://demo.bitiful.com/girl.jpeg?w=600 600w, https://demo.bitiful.com/girl.jpeg?w=800 800w, https://demo.bitiful.com/girl.jpeg 1200w" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;" onload="this.style.opacity=1; this.addEventListener('transitionend', function() { this.parentElement.style.backgroundImage='none'; }, { once: true });">
+		</div></li>
+<li>Third item</li>
+</ol>
+<h3>Image in blockquote</h3>
+<blockquote>
+<p>This is a blockquote with <div class="pic" style="
+			position: relative;
+			overflow: hidden;
+			width: 100%;
+			max-width: 1200px;
+			background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAgCAYAAAD5VeO1AAAMRklEQVR4AQBdAKL/AFp0kf9Xco//VG+M/1Bsif9Oa4n/T22L/1NykP9aeZj/YoKg/2qJp/9vjqr/cI6p/22Ko/9og5n/YXqO/1tyhP9ZbXz/W215/2Fxev9qeID/dICG/32Ijf+CjJH/AF0Aov8AW3WR/1lzj/9VcIz/UW2K/09sif9Qbov/VHOQ/1t6mP9jg6D/aoqm/2+Oqf9wjqj/boqi/2iDmf9heo3/XHKD/1lte/9bbXj/YXF6/2t4f/91gYb/foiM/4OMkP8AXQCi/wBfeZP/XXeR/1lzjv9VcIv/U2+K/1NwjP9XdZH/XnyY/2WEoP9si6b/cY+p/3KPp/9vi6H/aYOY/2J7jP9cc4L/Wm56/1xtd/9jcXn/bHl+/3aChf9/iYz/hI6Q/wBdAKL/AGV+lv9ifJT/XniR/1p1jv9YdIz/WHWO/1x5kv9igJn/aYeg/2+Opv90kan/dJGn/3GNof9rhZf/ZHyL/190gf9cb3r/X293/2Vzef9ve37/eYSF/4KLjP+HkJD/AF0Aov8AbYaa/2uEmP9ngJX/Y32S/2B7kP9ge5L/Y3+V/2iFnP9vjKL/dZKo/3iVqv94laf/dZCh/2+Il/9of4v/Y3eB/2Bzev9jc3f/and6/3N/f/9+iIf/h5CN/4yUkf8AXQCi/wB5kKH/do6f/3KKm/9thpj/aoSW/2mEl/9sh5r/cY2f/3eTpf98mKr/f5us/36aqf97lKL/dIyY/26Djf9ofIL/Z3h8/2l4ef9wfHz/eoWC/4WOif+PlpD/lJqU/wBdAKL/AIWcqP+Dmab/fpWi/3mRn/92jpz/dY6c/3aRn/96laT/gJup/4Sgrf+Hoa7/hqCr/4KapP97kpr/dYmO/3CChP9ufn7/cX58/3mDf/+DjIX/jpWN/5ielP+dopj/AF0Aov8Akqev/4+krf+LoKn/hpyl/4KZov+AmKL/gZqk/4SeqP+Jo63/jaew/4+osP+Opq3/iaCl/4OYm/98j5D/d4iG/3aEgP96hX//gouC/42Uif+YnpH/oqaZ/6ernf8AXQCi/wCdsbT/mq6x/5aqrf+Qpan/jKKm/4qgpf+Koqf/jaWq/5Gprv+UrbH/lq2x/5Srrf+Qpab/iZ2b/4OUkf9/jYf/foqC/4KMgf+KkoX/lpuM/6KllP+srpz/sbOg/wBdAKL/AKW2tf+itLL/na+u/5irqv+Tp6b/kKWl/5Gmpv+Tqan/lq2t/5mvr/+asK//mK2r/5Sno/+On5n/iJeP/4SRhv+EjoH/iJCB/5GXhf+doI3/qauW/7S0nf+5uaL/AF0Aov8AqLix/6W1rv+gsar/m6ym/5aoov+TpqH/k6ai/5Wppf+YrKj/m6+q/5uvqf+arKX/laae/4+elP+Kl4r/hpGC/4ePff+MkX3/lZmC/6Kji/+urpT/ubec/7+8of8AXQCi/wCmtKj/pLGm/5+tov+ZqJ3/lKSa/5GimP+Ropn/k6Wc/5aon/+YqqH/maug/5eonP+TopX/jpuM/4mTgv+Gjnv/h413/42QeP+Xl33/o6KF/7Ctj/+7tpf/wbyc/wBdAKL/AKGsm/+eqZn/maWV/5Sgkf+PnI7/jJuM/4ybjf+OnZD/kaGT/5Sjlf+Vo5X/k6GR/4+civ+KlYH/ho54/4OJcf+FiG7/i4xv/5aUdf+inn7/sKqI/7qzkP/AuZX/AF0Aov8AmKGN/5afiv+Rm4f/jJaD/4iTgP+FkX//hZKA/4iUg/+LmIb/jpuJ/4+biP+OmYX/ipR//4aNdv+Ch27/gINn/4KCZP+Ihmb/k45s/6CZdf+tpX//uK6H/76zjP8AXQCi/wCQln3/jZR7/4mQeP+EjHT/gIly/36Hcf9/iXP/gYx2/4WPev+Ikn3/ipN9/4mSev+GjXT/gods/36BZP99fV7/f3xb/4aAXf+QiWP/nZNs/6qfdv+1qH7/u62D/wBdAKL/AIiMcP+Gim7/goZr/36DaP96gGb/eX9m/3qBaP99hWz/gYlw/4WMc/+HjnT/h4xy/4SIbP+AgmX/fXxd/3t4V/9+eFT/hHxW/4+EXP+bjmT/qJlu/7Kjdv+4qHv/AF0Aov8AhIVm/4KDZP9+gGL/enxf/3d6Xf93el7/eHxh/3yAZf+AhWr/hIlu/4eLb/+HiW3/hYVn/4GAYP99elj/fHZS/351T/+EeVH/joBW/5qKXv+nlWf/sZ5v/7ajc/8AXQCi/wCDgF//gX9e/318XP96eVn/d3dY/3d4Wf95e13/fX9i/4KEZ/+HiGv/iYps/4qJav+HhWX/hH9e/4B5Vv9+dVD/gHRM/4Z3Tf+PflL/modZ/6aRYv+wmWn/tZ5t/wBdAKL/AIR/XP+CfVv/f3tZ/3x4V/96d1b/enhY/3x7W/+Bf2H/hoVm/4uJav+Ni2z/jopq/4uGZf+IgF3/hHpV/4F1Tv+Cc0r/h3VK/5B7Tv+ahFX/pY1d/66VZP+zmWf/AF0Aov8Ahn5b/4V9Wf+Ce1f/f3hW/313Vf99eFf/gHtb/4WAYP+Khmb/j4pq/5GMbP+Si2r/j4dl/4uBXf+HelT/hHRN/4RySP+Ic0f/j3hK/5l/UP+jiFf/rI9d/7GTYf8AXQCi/wCJflr/h3xY/4R6Vv+BeFX/gHdV/4B4Vv+De1r/h4Bg/4yFZf+RiWn/lItr/5SKaf+RhmP/jH9b/4h4Uv+EcUr/hG5F/4duQ/+NckX/lnlK/5+AUP+nh1X/q4tZ/wBdAKL/AIp8V/+Ie1b/hXhU/4J2U/+AdVL/gXZU/4N5WP+HfV3/jIJi/5CGZv+TiGf/k4Zl/5CBX/+Lelf/hXJN/4FsRP+AaD7/gmc8/4hqPf+QcEH/mXdH/6B9S/+kgE7/AF0Aov8AiHhU/4Z2Uv+DdFD/gHFO/35wTv9+cE//gHNS/4R3V/+IfFz/jH9g/4+AYf+Ofl7/i3lY/4ZyT/+AakX/e2M8/3peNv97XTP/gF8z/4hlN/+Qazv/lnBA/5pzQ/8AXQCi/wCFck7/g3BN/4BtSv98a0j/emlH/3lpSP96a0v/fm5P/4JyU/+FdVf/h3ZX/4Z0Vf+Db07/fmhG/3hfPP9zWDP/cVMs/3NSKP93VCj/flgr/4ZeMP+MYzT/kGY3/wBdAKL/AIBrSP9+aUb/emZE/3ZiQf9zYD//cl9A/3NhQv92ZEX/eWdJ/3xqTP9+a03/fWhK/3pjRP91XDv/b1Qy/2tNKP9pSCL/akYe/25IHv91TSH/fVIl/4NXKf+GWiz/AF0Aov8Ae2RC/3liQP91Xj3/cFo6/21XOP9rVjf/a1c5/21ZPP9wXD//c15C/3RfQv90XT//cVg6/2xRMf9nSSj/Y0Ig/2E+Gf9jPRb/Zz8W/25DGf92SR3/fE4i/4BRJP8AXQCi/wB3Xj3/dVw7/3BYOP9rUzT/Z1Ax/2ROMP9kTjH/ZU8z/2hSNv9rVDn/bFU5/2xTN/9pTjH/ZUgq/2BBIf9dOxn/XDcU/142Ef9jORL/az4V/3JDGf95SR7/fEwg/wBdAKL/AHVaOv9yWDj/blM0/2hOMP9jSi3/YEcr/19HK/9gSC3/Ykow/2VMMv9mTTP/Zksx/2RILP9hQiX/XTwd/1s2Fv9aMxH/XTMP/2M2Ef9rPBX/c0IZ/3lHHv99SyH/AF0Aov8AdVg6/3JWN/9tUTP/Z0wu/2FHK/9eRCj/XEMo/11EKv9fRSz/YUcu/2NIL/9jRy3/YkQp/18/I/9cORz/WzUW/1szEv9fNBH/ZjgT/24+F/92RB3/fUoi/4FNJP8AXQCi/wB2WDr/c1Y4/21RM/9nSy7/YUYq/11CJ/9bQSf/W0Eo/11DKv9gRS3/YkYt/2JFLP9hQin/Xz4j/105Hf9dNhj/XjUV/2M2FP9qOxf/c0Ec/3xIIv+DTif/h1Iq/wBdAKL/AHdZO/90Vjn/blE0/2hLL/9iRir/XUIn/1tAJ/9bQCj/XUIq/2BELP9iRS3/Y0Us/2JCKf9hPyT/Xzsf/184Gv9hNxj/ZjkY/24+G/93RSH/gUwn/4hTLP+MVi//AV0Aov8AeFo8/3VXOv9vUjX/aUww/2JGK/9eQij/W0An/1tAKP9dQir/YEQs/2JFLf9jRS3/Y0Mq/2I/Jf9hOyD/YTkc/2M5Gv9pOxr/cUAe/3pII/+ETyr/i1Uv/49ZMv88js14zJ8K+AAAAABJRU5ErkJggg==');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: 1200 / 1800;
+		">
+			<img src="https://demo.bitiful.com/girl.jpeg" alt="image" srcset="https://demo.bitiful.com/girl.jpeg?w=400 400w, https://demo.bitiful.com/girl.jpeg?w=600 600w, https://demo.bitiful.com/girl.jpeg?w=800 800w, https://demo.bitiful.com/girl.jpeg 1200w" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;" onload="this.style.opacity=1; this.addEventListener('transitionend', function() { this.parentElement.style.backgroundImage='none'; }, { once: true });">
+		</div></p>
+</blockquote>
+</div>
+        </div>
+    </div>
+</body>
+</html>
