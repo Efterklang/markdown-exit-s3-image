@@ -42,6 +42,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "sharp": "^0.34.5",
     "thumbhash": "^0.1.1"
   }
 }

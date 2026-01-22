@@ -2,6 +2,7 @@
  * Bitiful CDN integration utilities
  */
 import { thumbHashToDataURL } from "thumbhash";
+import sharp from "sharp";
 
 /**
  * Check if URL belongs to Bitiful CDN.
@@ -65,7 +66,17 @@ export async function getBitifulThumbhash(
     const thumbhashBytes = new Uint8Array(
       Buffer.from(base64String.trim(), "base64"),
     );
-    return thumbHashToDataURL(thumbhashBytes);
+    const pngDataUrl = thumbHashToDataURL(thumbhashBytes);
+
+    // Extract base64 data and remove the MIME prefix
+    const base64Data = pngDataUrl.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+
+    // Convert PNG buffer to WebP
+    const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+
+    // Encode back to base64 with new MIME type
+    return `data:image/webp;base64,${webpBuffer.toString("base64")}`;
   } catch (error) {
     console.warn(
       `[Bitiful] Thumbhash error for ${imageUrl}:`,
@@ -74,4 +85,3 @@ export async function getBitifulThumbhash(
     return null;
   }
 }
-
