@@ -21,22 +21,13 @@
   </div>
 </div>
 
-## Local images (should be skipped)
 
-![Local image](./test.png)
+## Width
 
-## Unsupported domains (if configured)
+width: 50
 
-![Unsupported domain](https://bu.dusays.com/2025/09/17/68c9f8d54dca5.webp)
+![pic|50](https://demo.bitiful.com/girl.jpeg)
 
-## Complex scenarios
+width:100, height: 400
 
-### Image in list
-
-1. First item
-2. ![Image in list](https://demo.bitiful.com/girl.jpeg)
-3. Third item
-
-### Image in blockquote
-
-> This is a blockquote with ![image](https://demo.bitiful.com/girl.jpeg)
+![pic|100x400](https://demo.bitiful.com/girl.jpeg)
