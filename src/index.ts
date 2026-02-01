@@ -9,6 +9,39 @@ import { resolveOptions } from "./options.js";
 import type { Options } from "./types.js";
 
 /**
+ * Parsed result from Obsidian-style image alt text.
+ */
+interface ParsedImageAlt {
+	alt: string;
+	width?: number;
+	height?: number;
+}
+
+/**
+ * Parse Obsidian-style image dimensions from alt text.
+ * Supports formats: `![alt|width]`, `![alt|widthxheight]`
+ * Examples:
+ *   - `![image|300]` -> width: 300
+ *   - `![image|300x200]` -> width: 300, height: 200
+ *
+ * @param content The image alt text content
+ * @returns Parsed result with alt text and optional dimensions
+ */
+export function parseObsidianImageAlt(content: string): ParsedImageAlt {
+	const trimmedContent = content.trim();
+	const match = trimmedContent.match(/^(.*?)\|(\d+)(?:x(\d+))?$/);
+	if (!match) {
+		return { alt: content };
+	}
+
+	const alt = match[1].trim();
+	const width = parseInt(match[2], 10);
+	const height = match[3] ? parseInt(match[3], 10) : undefined;
+
+	return { alt, width, height };
+}
+
+/**
  * Check if file format should be ignored based on URL extension.
  */
 function shouldIgnoreFormat(url: string, formats: string[]): boolean {
@@ -22,26 +55,18 @@ function shouldIgnoreFormat(url: string, formats: string[]): boolean {
 export function image(md: MarkdownExit, userOptions: Options) {
 	const options = resolveOptions(userOptions);
 
-	if (!options.progressive.enable) {
-		return;
-	}
-
 	const cachePath = options.cache_path;
-	const cache = cachePath ? new ImageCache(cachePath) : null;
+	const cache = cachePath && options.progressive.enable ? new ImageCache(cachePath) : null;
 
-	// Load cache once on plugin initialization
 	if (cache) {
 		cache.load().catch((err) => {
 			console.error("[ImageCache] Failed to load cache:", err);
 		});
-	}
 
-	// Save cache on exit
-	process.once("beforeExit", () => {
-		if (cache) {
+		process.once("beforeExit", () => {
 			cache.save();
-		}
-	});
+		});
+	}
 
 	const imageRule = md.renderer.rules.image;
 	if (!imageRule) {
@@ -52,24 +77,29 @@ export function image(md: MarkdownExit, userOptions: Options) {
 		const token = tokens[idx];
 		const src = token.attrGet("src");
 
-		// 忽略不处理的图片
-		// - 格式在忽略列表内
-		if (
-			!src ||
-			!src.startsWith("http") ||
-			!isBitifulDomain(src, options.bitiful_domains) ||
-			shouldIgnoreFormat(src, options.ignore_formats) ||
-			process.env.NODE_ENV === "development"
-		) {
+		const parsedAlt = parseObsidianImageAlt(token.content);
+
+		const shouldHandleProgressive =
+			options.progressive.enable &&
+			src &&
+			src.startsWith("http") &&
+			isBitifulDomain(src, options.bitiful_domains) &&
+			!shouldIgnoreFormat(src, options.ignore_formats) &&
+			process.env.NODE_ENV !== "development";
+
+		if (!shouldHandleProgressive) {
+			if (parsedAlt.width) {
+				const result = await imageRule(tokens, idx, info, env, self);
+				return applyDimensionToHTML(result, parsedAlt.width, parsedAlt.height);
+			}
 			return imageRule(tokens, idx, info, env, self);
 		}
 
-		// --- 1. Check Cache ---
 		if (cache) {
 			const cached = cache.get(src);
 			if (cached) {
 				return buildImageHTML(
-					token.content,
+					parsedAlt,
 					src,
 					options,
 					cached.width,
@@ -88,7 +118,6 @@ export function image(md: MarkdownExit, userOptions: Options) {
 			getBitifulThumbhash(src),
 		]);
 
-		// If dimension API fails, fall back to default image rendering
 		if (!dimensionResult) {
 			console.warn(
 				`[ImagePlugin] Skipping progressive image for ${src} - dimensions unavailable`,
@@ -100,14 +129,12 @@ export function image(md: MarkdownExit, userOptions: Options) {
 		height = dimensionResult.height;
 		placeholderUrl = thumbhashResult || "";
 
-		// --- 4. Cache Result ---
 		if (cache && placeholderUrl) {
 			cache.set(src, { width, height, dataURL: placeholderUrl });
 		}
 
-		// --- 5. Build and Return HTML ---
 		return buildImageHTML(
-			token.content,
+			parsedAlt,
 			src,
 			options,
 			width,
@@ -115,6 +142,32 @@ export function image(md: MarkdownExit, userOptions: Options) {
 			placeholderUrl,
 		);
 	};
+}
+
+/**
+ * Apply user-specified dimensions to existing HTML img tag.
+ */
+function applyDimensionToHTML(
+	html: string,
+	width?: number,
+	height?: number,
+): string {
+	if (!width) return html;
+
+	let style = `max-width: ${width}px; width: ${width}px;`;
+	if (height) {
+		style += ` height: ${height}px;`;
+	}
+
+	// Try to add style to existing img tag
+	if (html.includes("<img")) {
+		return html.replace(
+			/<img\s/,
+			`<img style="${style}" `,
+		);
+	}
+
+	return html;
 }
 
 function generateSrcset(
@@ -146,20 +199,24 @@ function generateSrcset(
 }
 
 function buildImageHTML(
-	alt: string,
+	parsedAlt: ParsedImageAlt,
 	src: string,
 	options: ReturnType<typeof resolveOptions>,
-	width: number,
-	height: number,
+	originalWidth: number,
+	originalHeight: number,
 	dataURL: string,
 ): string {
+	// Use user-specified dimensions if provided, otherwise use original dimensions
+	const displayWidth = parsedAlt.width || originalWidth;
+	const displayHeight = parsedAlt.height;
+
 	// 1. 生成响应式图片srcset
-	const srcset = generateSrcset(src, width, options.progressive.srcset_widths);
+	const srcset = generateSrcset(src, originalWidth, options.progressive.srcset_widths);
 
 	// 2. 构建 img 标签属性
 	const mainImgAttrs = [
 		`src="${src}"`,
-		`alt="${alt}"`,
+		`alt="${parsedAlt.alt}"`,
 		`srcset="${srcset}"`,
 		`loading="lazy" decoding="async"`,
 		`style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;"`,
@@ -167,6 +224,10 @@ function buildImageHTML(
 	]
 		.filter(Boolean)
 		.join(" ");
+
+	// Calculate aspect ratio based on display dimensions or original dimensions
+	const aspectWidth = displayWidth;
+	const aspectHeight = displayHeight || Math.round((originalHeight / originalWidth) * displayWidth);
 
 	/**
 	 * 3. 返回包装后的 HTML
@@ -178,11 +239,11 @@ function buildImageHTML(
 			position: relative;
 			overflow: hidden;
 			width: 100%;
-			max-width: ${width}px;
+			max-width: ${displayWidth}px;
 			background-image: url('${dataURL}');
 			background-size: cover;
 			background-repeat: no-repeat;
-			aspect-ratio: ${width} / ${height};
+			aspect-ratio: ${aspectWidth} / ${aspectHeight};
 		">
 			<img ${mainImgAttrs}>
 		</div>`;
