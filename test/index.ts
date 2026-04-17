@@ -1,71 +1,73 @@
-import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
-import { MarkdownExit } from 'markdown-exit';
-import { image } from '../src/index.js';
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { MarkdownExit } from "markdown-exit";
+import { image } from "../src/index.ts";
 
-const CACHE_FILE = './test/cache.json';
-const HTML_OUTPUT = './test/output.html';
+const CACHE_FILE = "./test/cache.json";
+const HTML_OUTPUT = "./test/output.html";
 
 async function runMarkdownProcessing(useCache: boolean) {
-  const md = new MarkdownExit({
-    html: true
-  });
-  const options = {
-    progressive: {
-      enable: true,
-      srcset_widths: [400, 600, 800]
-    },
-    lazy: {
-      enable: true
-    },
-    ignore_formats: ['svg'],
-    cache_path: useCache ? CACHE_FILE : null
-  };
+	const md = new MarkdownExit({
+		html: true,
+	});
+	const options = {
+		progressive: {
+			enable: true,
+			srcset_widths: [400, 600, 800],
+		},
+		lazy: {
+			enable: true,
+		},
+		ignore_formats: ["svg"],
+		cache_path: useCache ? CACHE_FILE : null,
+	};
 
-  md.use(image, options);
+	md.use(image, options);
 
-  const input = readFileSync('./test/test-input.md', 'utf8');
-  const startTime = Date.now();
-  const result = await md.renderAsync(input);
-  const duration = Date.now() - startTime;
+	const input = readFileSync("./test/test-input.md", "utf8");
+	const startTime = Date.now();
+	const result = await md.renderAsync(input);
+	const duration = Date.now() - startTime;
 
-  return { result, duration };
+	return { result, duration };
 }
 
 async function test() {
-  try {
-    console.log('🧪 Cache Functionality Test');
-    console.log('='.repeat(60));
+	try {
+		console.log("🧪 Cache Functionality Test");
+		console.log("=".repeat(60));
 
-    console.log('\n📝 Running markdown processing...');
-    console.log('-'.repeat(60));
-    const { result, duration } = await runMarkdownProcessing(true);
-    console.log(`⏱️  Duration: ${duration}ms`);
+		console.log("\n📝 Running markdown processing...");
+		console.log("-".repeat(60));
+		const { result, duration } = await runMarkdownProcessing(true);
+		console.log(`⏱️  Duration: ${duration}ms`);
 
-    console.log('\n📝 Checking cache file status...');
-    console.log('-'.repeat(60));
-    let cacheInfo = 'No cache file';
-    if (existsSync(CACHE_FILE)) {
-      console.log('✅ Cache file exists');
-      const cacheContent = readFileSync(CACHE_FILE, 'utf8');
-      const cacheEntries = JSON.parse(cacheContent);
-      console.log(`📊 Cache entries: ${Object.keys(cacheEntries).length} images`);
-      console.log(`📦 File size: ${cacheContent.length} bytes`);
+		console.log("\n📝 Checking cache file status...");
+		console.log("-".repeat(60));
+		let cacheInfo = "No cache file";
+		if (existsSync(CACHE_FILE)) {
+			console.log("✅ Cache file exists");
+			const cacheContent = readFileSync(CACHE_FILE, "utf8");
+			const cacheEntries = JSON.parse(cacheContent);
+			console.log(
+				`📊 Cache entries: ${Object.keys(cacheEntries).length} images`,
+			);
+			console.log(`📦 File size: ${cacheContent.length} bytes`);
 
-      cacheInfo = `${Object.keys(cacheEntries).length} cached images`;
+			cacheInfo = `${Object.keys(cacheEntries).length} cached images`;
 
-      if (Object.keys(cacheEntries).length > 0) {
-        const firstKey = Object.keys(cacheEntries)[0];
-        const entry = cacheEntries[firstKey];
-        console.log(`\n📝 Sample cache entry:`);
-        console.log(`   - URL: ${firstKey.substring(0, 50)}...`);
-        console.log(`   - Size: ${entry.width}x${entry.height}`);
-        console.log(`   - Data URL length: ${entry.dataURL.length} chars`);
-      }
-    } else {
-      console.log('❌ Cache file does not exist');
-    }
+			if (Object.keys(cacheEntries).length > 0) {
+				const firstKey = Object.keys(cacheEntries)[0];
+				const entry = cacheEntries[firstKey];
+				console.log(`\n📝 Sample cache entry:`);
+				console.log(`   - URL: ${firstKey.substring(0, 50)}...`);
+				console.log(`   - Size: ${entry.width}x${entry.height}`);
+				console.log(`   - Data URL length: ${entry.dataURL.length} chars`);
+			}
+		} else {
+			console.log("❌ Cache file does not exist");
+		}
 
-    const htmlOutput = `<!DOCTYPE html>
+		const htmlOutput = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -146,7 +148,7 @@ async function test() {
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">Cache Status</span>
-                    <span class="stat-value ${existsSync(CACHE_FILE) ? 'success' : 'warning'}">${cacheInfo}</span>
+                    <span class="stat-value ${existsSync(CACHE_FILE) ? "success" : "warning"}">${cacheInfo}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">Cache File</span>
@@ -171,19 +173,18 @@ async function test() {
 </body>
 </html>`;
 
-    writeFileSync(HTML_OUTPUT, htmlOutput, 'utf8');
-    console.log('\n' + '='.repeat(60));
-    console.log('✅ Test completed!');
-    console.log(`📁 Open ${HTML_OUTPUT} in your browser to view results`);
-    console.log('\n💡 To verify cache speedup:');
-    console.log('   1. Run: bun run test  (creates cache, note duration)');
-    console.log('   2. Run: bun run test  (uses cache, note duration)');
-    console.log('   3. Second run should be faster due to cache hits');
-
-  } catch (error) {
-    console.error('\n❌ Test failed:', error);
-    process.exit(1);
-  }
+		writeFileSync(HTML_OUTPUT, htmlOutput, "utf8");
+		console.log("\n" + "=".repeat(60));
+		console.log("✅ Test completed!");
+		console.log(`📁 Open ${HTML_OUTPUT} in your browser to view results`);
+		console.log("\n💡 To verify cache speedup:");
+		console.log("   1. Run: bun run test  (creates cache, note duration)");
+		console.log("   2. Run: bun run test  (uses cache, note duration)");
+		console.log("   3. Second run should be faster due to cache hits");
+	} catch (error) {
+		console.error("\n❌ Test failed:", error);
+		process.exit(1);
+	}
 }
 
 test();
