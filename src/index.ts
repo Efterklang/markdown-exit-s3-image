@@ -6,7 +6,7 @@ import {
 } from "./bitiful.js";
 import { ImageCache } from "./cache.js";
 import { resolveOptions } from "./options.js";
-import type { Options } from "./types.js";
+import type { Options, ResolvedOptions } from "./types.js";
 
 /**
  * Parsed result from Obsidian-style image alt text.
@@ -17,15 +17,11 @@ interface ParsedImageAlt {
 	height?: number;
 }
 
+type ImageRule = NonNullable<MarkdownExit["renderer"]["rules"]["image"]>;
+
 /**
  * Parse Obsidian-style image dimensions from alt text.
  * Supports formats: `![alt|width]`, `![alt|widthxheight]`
- * Examples:
- *   - `![image|300]` -> width: 300
- *   - `![image|300x200]` -> width: 300, height: 200
- *
- * @param content The image alt text content
- * @returns Parsed result with alt text and optional dimensions
  */
 export function parseObsidianImageAlt(content: string): ParsedImageAlt {
 	const trimmedContent = content.trim();
@@ -35,8 +31,8 @@ export function parseObsidianImageAlt(content: string): ParsedImageAlt {
 	}
 
 	const alt = match[1].trim();
-	const width = parseInt(match[2], 10);
-	const height = match[3] ? parseInt(match[3], 10) : undefined;
+	const width = Number.parseInt(match[2], 10);
+	const height = match[3] ? Number.parseInt(match[3], 10) : undefined;
 
 	return { alt, width, height };
 }
@@ -45,26 +41,250 @@ export function parseObsidianImageAlt(content: string): ParsedImageAlt {
  * Check if file format should be ignored based on URL extension.
  */
 function shouldIgnoreFormat(url: string, formats: string[]): boolean {
-	const urlObj = new URL(url);
-	const pathname = urlObj.pathname.toLowerCase();
-	return formats.some((format) =>
-		pathname.endsWith(`.${format.toLowerCase()}`),
+	try {
+		const pathname = new URL(url).pathname.toLowerCase();
+		return formats.some((format) =>
+			pathname.endsWith(`.${format.toLowerCase()}`),
+		);
+	} catch {
+		return false;
+	}
+}
+
+function shouldUseProgressiveImage(
+	src: string | null,
+	options: ResolvedOptions,
+): src is string {
+	return Boolean(
+		options.progressive.enable &&
+			src &&
+			src.startsWith("http") &&
+			isBitifulDomain(src, options.bitiful_domains) &&
+			!shouldIgnoreFormat(src, options.ignore_formats) &&
+			process.env.NODE_ENV !== "development",
 	);
+}
+
+function escapeHtml(value: string): string {
+	return value
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll('"', "&quot;")
+		.replaceAll("'", "&#39;");
+}
+
+function addOrMergeStyleAttribute(html: string, style: string): string {
+	if (!html.includes("<img")) {
+		return html;
+	}
+
+	if (html.includes('style="')) {
+		return html.replace(/style="([^"]*)"/, (_match, existingStyle: string) => {
+			const separator =
+				existingStyle.length > 0 && !existingStyle.trim().endsWith(";")
+					? "; "
+					: " ";
+			return `style="${existingStyle}${separator}${style}"`;
+		});
+	}
+
+	return html.replace(/<img\b/, `<img style="${style}"`);
+}
+
+function applyDimensionToHTML(
+	html: string,
+	width?: number,
+	height?: number,
+): string {
+	if (!width) {
+		return html;
+	}
+
+	let style = `max-width: ${width}px; width: ${width}px;`;
+	if (height) {
+		style += ` height: ${height}px;`;
+	}
+
+	return addOrMergeStyleAttribute(html, style);
+}
+
+function wrapWithFigure(html: string, caption: string): string {
+	if (!caption) {
+		return html;
+	}
+
+	return `<figure>${html}<figcaption>${escapeHtml(caption)}</figcaption></figure>`;
+}
+
+async function renderStandardImage(
+	imageRule: ImageRule,
+	tokens: Parameters<ImageRule>[0],
+	idx: number,
+	info: Parameters<ImageRule>[2],
+	env: Parameters<ImageRule>[3],
+	self: Parameters<ImageRule>[4],
+	parsedAlt: ParsedImageAlt,
+): Promise<string> {
+	const token = tokens[idx];
+	const originalContent = token.content;
+	token.content = parsedAlt.alt;
+
+	try {
+		const html = await imageRule(tokens, idx, info, env, self);
+		return wrapWithFigure(
+			applyDimensionToHTML(html, parsedAlt.width, parsedAlt.height),
+			parsedAlt.alt,
+		);
+	} finally {
+		token.content = originalContent;
+	}
+}
+
+function generateSrcset(
+	src: string,
+	width: number,
+	srcsetWidths: number[],
+): string {
+	const sortedWidths = Array.from(
+		new Set(
+			srcsetWidths
+				.filter((candidate) => Number.isFinite(candidate) && candidate > 0)
+				.filter((candidate) => candidate < width)
+				.concat(width),
+		),
+	).sort((a, b) => a - b);
+
+	return sortedWidths
+		.map((candidateWidth) => {
+			const url =
+				candidateWidth === width
+					? src
+					: src.includes("?")
+						? `${src}&w=${candidateWidth}`
+						: `${src}?w=${candidateWidth}`;
+			return `${url} ${candidateWidth}w`;
+		})
+		.join(", ");
+}
+
+function buildProgressiveImageHTML(
+	parsedAlt: ParsedImageAlt,
+	src: string,
+	options: ResolvedOptions,
+	originalWidth: number,
+	originalHeight: number,
+	dataURL: string,
+): string {
+	const displayWidth = parsedAlt.width ?? originalWidth;
+	const displayHeight =
+		parsedAlt.height ??
+		Math.round((originalHeight / originalWidth) * displayWidth);
+	const srcset = generateSrcset(
+		src,
+		originalWidth,
+		options.progressive.srcset_widths,
+	);
+	const escapedAlt = escapeHtml(parsedAlt.alt);
+	const escapedSrc = escapeHtml(src);
+	const figcaption = parsedAlt.alt
+		? `<figcaption style="margin-top: 8px; text-align: center; color: #666; font-size: 0.9em;">${escapedAlt}</figcaption>`
+		: "";
+
+	// 注意：这里的 onload 逻辑依然是操作 parentElement，即操作我们新增的 wrapper 层
+	const mainImgAttrs = [
+		`src="${escapedSrc}"`,
+		`alt="${escapedAlt}"`,
+		`srcset="${escapeHtml(srcset)}"`,
+		`sizes="${escapeHtml(options.progressive.sizes ?? `${displayWidth}px`)}"`,
+		`loading="lazy"`,
+		`decoding="async"`,
+		`style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out; display: block;"`,
+		`onload="this.style.opacity=1; setTimeout(() => { this.parentElement.style.backgroundImage='none'; }, 600);"`,
+	]
+		.filter(Boolean)
+		.join(" ");
+
+	if (!dataURL) {
+		const imageHtml = `<img ${mainImgAttrs}>`;
+		return figcaption
+			? `<figure style="max-width: ${displayWidth}px;">${imageHtml}${figcaption}</figure>`
+			: imageHtml;
+	}
+
+	// 核心修改：增加了一个包裹图片的 div，将背景和比例从 figure 移到了这个 div 上
+	return `
+	<figure class="pic" style="max-width: ${displayWidth}px; width: 100%; margin: 1em auto;">
+		<div class="img-wrapper" style="
+			position: relative;
+			width: 100%;
+			background-image: url('${dataURL}');
+			background-size: cover;
+			background-repeat: no-repeat;
+			aspect-ratio: ${displayWidth} / ${displayHeight};
+			overflow: hidden;
+		">
+			<img ${mainImgAttrs}>
+		</div>
+		${figcaption}
+	</figure>`.replace(/\n\t+/g, ""); // 移除多余换行和空格
+}
+
+async function getProgressiveImageData(
+	src: string,
+	cache: ImageCache | null,
+): Promise<{
+	dataURL: string;
+	width: number;
+	height: number;
+} | null> {
+	if (cache) {
+		const cached = cache.get(src);
+		if (cached) {
+			return cached;
+		}
+	}
+
+	const [dimensionResult, thumbhashResult] = await Promise.all([
+		getBitifulDimension(src),
+		getBitifulThumbhash(src),
+	]);
+
+	if (!dimensionResult) {
+		console.warn(
+			`[ImagePlugin] Skipping progressive image for ${src} - dimensions unavailable`,
+		);
+		return null;
+	}
+
+	const result = {
+		width: dimensionResult.width,
+		height: dimensionResult.height,
+		dataURL: thumbhashResult ?? "",
+	};
+
+	if (cache && result.dataURL) {
+		cache.set(src, result);
+	}
+
+	return result;
 }
 
 export function image(md: MarkdownExit, userOptions: Options) {
 	const options = resolveOptions(userOptions);
-
-	const cachePath = options.cache_path;
-	const cache = cachePath && options.progressive.enable ? new ImageCache(cachePath) : null;
+	const cache =
+		options.cache_path && options.progressive.enable
+			? new ImageCache(options.cache_path)
+			: null;
+	const cacheReady = cache
+		? cache.load().catch((error) => {
+				console.error("[ImageCache] Failed to load cache:", error);
+			})
+		: Promise.resolve();
 
 	if (cache) {
-		cache.load().catch((err) => {
-			console.error("[ImageCache] Failed to load cache:", err);
-		});
-
 		process.once("beforeExit", () => {
-			cache.save();
+			void cache.save();
 		});
 	}
 
@@ -76,180 +296,42 @@ export function image(md: MarkdownExit, userOptions: Options) {
 	md.renderer.rules.image = async (tokens, idx, info, env, self) => {
 		const token = tokens[idx];
 		const src = token.attrGet("src");
-
 		const parsedAlt = parseObsidianImageAlt(token.content);
 
-		const shouldHandleProgressive =
-			options.progressive.enable &&
-			src &&
-			src.startsWith("http") &&
-			isBitifulDomain(src, options.bitiful_domains) &&
-			!shouldIgnoreFormat(src, options.ignore_formats) &&
-			process.env.NODE_ENV !== "development";
-
-		if (!shouldHandleProgressive) {
-			if (parsedAlt.width) {
-				const result = await imageRule(tokens, idx, info, env, self);
-				const html = applyDimensionToHTML(result, parsedAlt.width, parsedAlt.height);
-				return wrapWithFigure(html, parsedAlt.alt);
-			}
-			const html = await imageRule(tokens, idx, info, env, self);
-			return wrapWithFigure(html, parsedAlt.alt);
-		}
-
-		if (cache) {
-			const cached = cache.get(src);
-			if (cached) {
-				return buildImageHTML(
-					parsedAlt,
-					src,
-					options,
-					cached.width,
-					cached.height,
-					cached.dataURL,
-				);
-			}
-		}
-
-		let width: number;
-		let height: number;
-		let placeholderUrl = "";
-
-		const [dimensionResult, thumbhashResult] = await Promise.all([
-			getBitifulDimension(src),
-			getBitifulThumbhash(src),
-		]);
-
-		if (!dimensionResult) {
-			console.warn(
-				`[ImagePlugin] Skipping progressive image for ${src} - dimensions unavailable`,
+		if (!shouldUseProgressiveImage(src, options)) {
+			return renderStandardImage(
+				imageRule,
+				tokens,
+				idx,
+				info,
+				env,
+				self,
+				parsedAlt,
 			);
-			return imageRule(tokens, idx, info, env, self);
 		}
 
-		width = dimensionResult.width;
-		height = dimensionResult.height;
-		placeholderUrl = thumbhashResult || "";
+		await cacheReady;
 
-		if (cache && placeholderUrl) {
-			cache.set(src, { width, height, dataURL: placeholderUrl });
+		const progressiveData = await getProgressiveImageData(src, cache);
+		if (!progressiveData) {
+			return renderStandardImage(
+				imageRule,
+				tokens,
+				idx,
+				info,
+				env,
+				self,
+				parsedAlt,
+			);
 		}
 
-		return buildImageHTML(
+		return buildProgressiveImageHTML(
 			parsedAlt,
 			src,
 			options,
-			width,
-			height,
-			placeholderUrl,
+			progressiveData.width,
+			progressiveData.height,
+			progressiveData.dataURL,
 		);
 	};
-}
-
-function applyDimensionToHTML(
-	html: string,
-	width?: number,
-	height?: number,
-): string {
-	if (!width) return html;
-
-	let style = `max-width: ${width}px; width: ${width}px;`;
-	if (height) {
-		style += ` height: ${height}px;`;
-	}
-
-	// Try to add style to existing img tag
-	if (html.includes("<img")) {
-		return html.replace(
-			/<img\s/,
-			`<img style="${style}" `,
-		);
-	}
-
-	return html;
-}
-
-function generateSrcset(
-	src: string,
-	width: number,
-	srcsetWidths: number[],
-): string {
-	// 1. 过滤并处理宽度列表
-	const validWidths = srcsetWidths
-		.filter((w) => w < width) // 只保留比原图小的尺寸
-		.concat(width); // 将原图实际宽度作为最后一档加入
-
-	// 2. 去重并排序
-	const sortedWidths = Array.from(new Set(validWidths)).sort((a, b) => a - b);
-
-	// 3. 生成字符串
-	return sortedWidths
-		.map((w) => {
-			// 如果w等于原始宽度，不添加w=参数；否则添加w=参数用于CDN响应式处理
-			const url =
-				w === width
-					? src
-					: src.includes("?")
-						? `${src}&w=${w}`
-						: `${src}?w=${w}`;
-			return `${url} ${w}w`;
-		})
-		.join(", ");
-}
-
-function buildImageHTML(
-	parsedAlt: ParsedImageAlt,
-	src: string,
-	options: ReturnType<typeof resolveOptions>,
-	originalWidth: number,
-	originalHeight: number,
-	dataURL: string,
-): string {
-	// Use user-specified dimensions if provided, otherwise use original dimensions
-	const displayWidth = parsedAlt.width || originalWidth;
-	const displayHeight = parsedAlt.height;
-
-	// 1. 生成响应式图片srcset
-	const srcset = generateSrcset(src, originalWidth, options.progressive.srcset_widths);
-
-	// 2. 构建 img 标签属性
-	const mainImgAttrs = [
-		`src="${src}"`,
-		`alt="${parsedAlt.alt}"`,
-		`srcset="${srcset}"`,
-		`loading="lazy" decoding="async"`,
-		`style="width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease-in-out;"`,
-		`onload="this.style.opacity=1; setTimeout(() => { this.parentElement.style.backgroundImage='none'; }, 600);"`,
-	]
-		.filter(Boolean)
-		.join(" ");
-
-	// Calculate aspect ratio based on display dimensions or original dimensions
-	const aspectWidth = displayWidth;
-	const aspectHeight = displayHeight || Math.round((originalHeight / originalWidth) * displayWidth);
-
-	/**
-	 * 3. 返回包装后的 HTML
-	 * - 只有当有 dataURL 时才包装 div
-	 * - 外层 div 设置背景和宽高比
-	 */
-	if (dataURL) {
-		const figcaption = parsedAlt.alt ? `<figcaption>${parsedAlt.alt}</figcaption>` : "";
-		return `<figure class="pic" style="
-			position: relative;
-			overflow: hidden;
-			width: 100%;
-			max-width: ${displayWidth}px;
-			background-image: url('${dataURL}');
-			background-size: cover;
-			background-repeat: no-repeat;
-			aspect-ratio: ${aspectWidth} / ${aspectHeight};
-		">
-			${figcaption}
-			<img ${mainImgAttrs}>
-		</figure>`;
-	} else {
-		if (!parsedAlt.alt) return `<img ${mainImgAttrs}>`;
-		return `<figure><figcaption>${parsedAlt.alt}</figcaption><img ${mainImgAttrs}></figure>`;
-	}
 }
