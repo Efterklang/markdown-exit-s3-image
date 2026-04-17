@@ -90,9 +90,11 @@ export function image(md: MarkdownExit, userOptions: Options) {
 		if (!shouldHandleProgressive) {
 			if (parsedAlt.width) {
 				const result = await imageRule(tokens, idx, info, env, self);
-				return applyDimensionToHTML(result, parsedAlt.width, parsedAlt.height);
+				const html = applyDimensionToHTML(result, parsedAlt.width, parsedAlt.height);
+				return wrapWithFigure(html, parsedAlt.alt);
 			}
-			return imageRule(tokens, idx, info, env, self);
+			const html = await imageRule(tokens, idx, info, env, self);
+			return wrapWithFigure(html, parsedAlt.alt);
 		}
 
 		if (cache) {
@@ -144,9 +146,6 @@ export function image(md: MarkdownExit, userOptions: Options) {
 	};
 }
 
-/**
- * Apply user-specified dimensions to existing HTML img tag.
- */
 function applyDimensionToHTML(
 	html: string,
 	width?: number,
@@ -235,7 +234,8 @@ function buildImageHTML(
 	 * - 外层 div 设置背景和宽高比
 	 */
 	if (dataURL) {
-		return `<div class="pic" style="
+		const figcaption = parsedAlt.alt ? `<figcaption>${parsedAlt.alt}</figcaption>` : "";
+		return `<figure class="pic" style="
 			position: relative;
 			overflow: hidden;
 			width: 100%;
@@ -245,9 +245,11 @@ function buildImageHTML(
 			background-repeat: no-repeat;
 			aspect-ratio: ${aspectWidth} / ${aspectHeight};
 		">
+			${figcaption}
 			<img ${mainImgAttrs}>
-		</div>`;
+		</figure>`;
 	} else {
-		return `<img ${mainImgAttrs}>`;
+		if (!parsedAlt.alt) return `<img ${mainImgAttrs}>`;
+		return `<figure><figcaption>${parsedAlt.alt}</figcaption><img ${mainImgAttrs}></figure>`;
 	}
 }
